@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Plus, CalendarDays } from "lucide-react";
 
 const categories = [
@@ -19,6 +21,8 @@ const categories = [
 
 const AddExpense = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     amount: "",
@@ -26,10 +30,10 @@ const AddExpense = () => {
     notes: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.amount || !formData.category) {
+    if (!formData.amount || !formData.category || !user) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -38,21 +42,44 @@ const AddExpense = () => {
       return;
     }
 
-    // This will be replaced with actual API call to Supabase
-    console.log("Adding expense:", formData);
-    
-    toast({
-      title: "Success!",
-      description: "Expense added successfully",
-    });
-    
-    // Reset form
-    setFormData({
-      date: new Date().toISOString().split('T')[0],
-      amount: "",
-      category: "",
-      notes: ""
-    });
+    setLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('expenses')
+        .insert({
+          user_id: user.id,
+          date: formData.date,
+          amount: parseFloat(formData.amount),
+          category: formData.category,
+          notes: formData.notes || null
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Success!",
+        description: "Expense added successfully",
+      });
+      
+      // Reset form
+      setFormData({
+        date: new Date().toISOString().split('T')[0],
+        amount: "",
+        category: "",
+        notes: ""
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add expense",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -156,9 +183,10 @@ const AddExpense = () => {
             <Button 
               type="submit" 
               className="w-full bg-gradient-primary hover:shadow-elevated transition-all duration-200"
+              disabled={loading}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add Expense
+              {loading ? "Adding..." : "Add Expense"}
             </Button>
           </form>
         </CardContent>
@@ -191,6 +219,7 @@ const AddExpense = () => {
                     notes: item.label
                   }));
                 }}
+                disabled={loading}
                 className="h-auto p-3 flex flex-col space-y-1 hover:bg-accent/80"
               >
                 <span className="font-medium">{item.label}</span>
