@@ -4,6 +4,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis
 import { TrendingUp, DollarSign, Target, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { getMonthDateRange } from "@/lib/dateUtils";
 
 interface Expense {
   id: string;
@@ -38,13 +39,15 @@ const Dashboard = () => {
     if (!user) return;
 
     try {
+      const { startDate, endDate } = getMonthDateRange(currentMonth);
+
       // Fetch current month's expenses
       const { data: expensesData, error: expensesError } = await supabase
         .from('expenses')
         .select('*')
         .eq('user_id', user.id)
-        .gte('date', `${currentMonth}-01`)
-        .lt('date', `${currentMonth}-32`)
+        .gte('date', startDate)
+        .lt('date', endDate)
         .order('date', { ascending: false });
 
       if (expensesError) throw expensesError;

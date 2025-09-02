@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { getMonthDateRange } from "@/lib/dateUtils";
 import { Target, DollarSign, TrendingUp, AlertTriangle, Settings } from "lucide-react";
 
 interface Budget {
@@ -52,13 +53,14 @@ const Budget = () => {
 
       if (budgetError) throw budgetError;
 
-      // Fetch current month's expenses
+      // Fetch current month's expenses with proper date range
+      const { startDate, endDate } = getMonthDateRange(currentMonth);
       const { data: expensesData, error: expensesError } = await supabase
         .from('expenses')
         .select('category, amount')
         .eq('user_id', user.id)
-        .gte('date', `${currentMonth}-01`)
-        .lt('date', `${currentMonth}-32`);
+        .gte('date', startDate)
+        .lt('date', endDate);
 
       if (expensesError) throw expensesError;
 
