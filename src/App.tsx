@@ -8,6 +8,7 @@ import Navigation from "./components/Navigation";
 import Dashboard from "./pages/Dashboard";
 import AddExpense from "./pages/AddExpense";
 import Budget from "./pages/Budget";
+import Reminders from "./pages/Reminders";
 import AIInsights from "./pages/AIInsights";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -52,6 +53,11 @@ const AppContent = () => {
           <Route path="/budget" element={
             <ProtectedRoute>
               <Budget />
+            </ProtectedRoute>
+          } />
+          <Route path="/reminders" element={
+            <ProtectedRoute>
+              <Reminders />
             </ProtectedRoute>
           } />
           <Route path="/insights" element={

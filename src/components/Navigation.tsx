@@ -6,6 +6,7 @@ import {
   Plus, 
   Settings, 
   Brain,
+  Bell,
   Wallet,
   LogOut
 } from "lucide-react";
@@ -19,6 +20,7 @@ const Navigation = () => {
     { path: "/", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/add-expense", icon: Plus, label: "Add Expense" },
     { path: "/budget", icon: Settings, label: "Budget" },
+    { path: "/reminders", icon: Bell, label: "Reminders" },
     { path: "/insights", icon: Brain, label: "AI Insights" },
   ];
 

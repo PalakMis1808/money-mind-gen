@@ -100,15 +100,22 @@ const Dashboard = () => {
   const remaining = monthlyBudget - totalSpent;
   const spentPercentage = monthlyBudget > 0 ? (totalSpent / monthlyBudget) * 100 : 0;
 
-  // Calculate monthly trends (simplified for now)
-  const monthlyTrends = [
-    { month: "Jan", spent: 0, budget: monthlyBudget },
-    { month: "Feb", spent: 0, budget: monthlyBudget },
-    { month: "Mar", spent: 0, budget: monthlyBudget },
-    { month: "Apr", spent: 0, budget: monthlyBudget },
-    { month: "May", spent: 0, budget: monthlyBudget },
-    { month: new Date().toLocaleDateString('en', { month: 'short' }), spent: totalSpent, budget: monthlyBudget },
-  ];
+  // Calculate daily trends for current month
+  const dailyTrends = expenses.reduce((acc, expense) => {
+    const existingDay = acc.find(item => item.date === expense.date);
+    if (existingDay) {
+      existingDay.amount += expense.amount;
+    } else {
+      acc.push({ date: expense.date, amount: expense.amount });
+    }
+    return acc;
+  }, [] as { date: string; amount: number }[])
+  .sort((a, b) => a.date.localeCompare(b.date))
+  .map(item => ({ 
+    date: new Date(item.date).getDate().toString(), 
+    spent: item.amount,
+    budget: monthlyBudget / 30 // Daily budget approximation
+  }));
 
   if (loading) {
     return (
@@ -209,17 +216,17 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Monthly Trends */}
+        {/* Daily Trends */}
         <Card className="shadow-card">
           <CardHeader>
-            <CardTitle>Monthly Trends</CardTitle>
-            <CardDescription>Your spending vs budget over time</CardDescription>
+            <CardTitle>Daily Spending Trends</CardTitle>
+            <CardDescription>Your daily spending vs daily budget this month</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={monthlyTrends}>
+              <LineChart data={dailyTrends}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
+                <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip formatter={(value) => [`$${value}`, '']} />
                 <Legend />
@@ -228,7 +235,7 @@ const Dashboard = () => {
                   dataKey="spent" 
                   stroke="hsl(var(--primary))" 
                   strokeWidth={2}
-                  name="Spent"
+                  name="Daily Spent"
                 />
                 <Line 
                   type="monotone" 
@@ -236,7 +243,7 @@ const Dashboard = () => {
                   stroke="hsl(var(--secondary))" 
                   strokeWidth={2}
                   strokeDasharray="5 5"
-                  name="Budget"
+                  name="Daily Budget"
                 />
               </LineChart>
             </ResponsiveContainer>

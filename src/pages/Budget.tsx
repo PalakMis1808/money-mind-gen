@@ -104,14 +104,16 @@ const Budget = () => {
 
         setBudget({ ...budget, limit_amount: budgetAmount });
       } else {
-        // Create new budget
+        // Use upsert to handle duplicate key constraint
         const { data, error } = await supabase
           .from('budgets')
-          .insert({
+          .upsert({
             user_id: user.id,
             month: currentMonth,
             limit_amount: budgetAmount,
             spent: 0
+          }, {
+            onConflict: 'user_id,month'
           })
           .select()
           .single();
