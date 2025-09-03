@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
-import { TrendingUp, DollarSign, Target, AlertCircle } from "lucide-react";
+import { TrendingUp, Target, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { getMonthDateRange } from "@/lib/dateUtils";
@@ -142,24 +142,25 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="bg-gradient-card shadow-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Spent</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-secondary">Total Spent</CardTitle>
+            <span className="h-4 w-4 text-muted-foreground">₹</span>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">${totalSpent.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-success">₹{totalSpent.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
               {spentPercentage.toFixed(1)}% of monthly budget
             </p>
           </CardContent>
         </Card>
 
+
         <Card className="bg-gradient-card shadow-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Budget</CardTitle>
+            <CardTitle className="text-sm font-medium text-secondary">Monthly Budget</CardTitle>
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-secondary">${monthlyBudget.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-success">₹{monthlyBudget.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
               {budget ? 'Set for this month' : 'No budget set'}
             </p>
@@ -168,12 +169,12 @@ const Dashboard = () => {
 
         <Card className="bg-gradient-card shadow-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Remaining</CardTitle>
+            <CardTitle className="text-sm font-medium text-secondary">Remaining</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className={`text-2xl font-bold ${remaining > 0 ? 'text-success' : 'text-destructive'}`}>
-              ${remaining.toFixed(2)}
+              ₹{remaining.toFixed(2)}
             </div>
             <p className="text-xs text-muted-foreground">
               {remaining > 0 ? 'Available to spend' : 'Over budget'}
@@ -236,14 +237,14 @@ const Dashboard = () => {
                 <Line 
                   type="monotone" 
                   dataKey="spent" 
-                  stroke="hsl(var(--primary))" 
+                  stroke="hsl(var(--success))" 
                   strokeWidth={2}
                   name="Daily Spent"
                 />
                 <Line 
                   type="monotone" 
                   dataKey="budget" 
-                  stroke="hsl(var(--secondary))" 
+                  stroke="hsl(var(--success))" 
                   strokeWidth={2}
                   strokeDasharray="5 5"
                   name="Daily Budget"

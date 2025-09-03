@@ -131,7 +131,7 @@ const AddExpense = () => {
               <Label htmlFor="amount">Amount *</Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                  $
+                  ₹
                 </span>
                 <Input
                   id="amount"
@@ -169,7 +169,7 @@ const AddExpense = () => {
 
             {/* Notes */}
             <div className="space-y-2">
-              <Label htmlFor="notes">Notes (Optional)</Label>
+              <Label htmlFor="notes">Notes</Label>
               <Textarea
                 id="notes"
                 placeholder="Add any additional details about this expense..."
@@ -201,12 +201,12 @@ const AddExpense = () => {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {[
-              { label: "Coffee", amount: 5, category: "Food" },
-              { label: "Lunch", amount: 15, category: "Food" },
-              { label: "Gas", amount: 50, category: "Travel" },
-              { label: "Groceries", amount: 75, category: "Food" },
-              { label: "Movie", amount: 12, category: "Entertainment" },
-              { label: "Parking", amount: 10, category: "Travel" },
+              { label: "Coffee", amount: 25, category: "Food" },
+              { label: "Lunch", amount: 200, category: "Food" },
+              { label: "Gas", amount: 100, category: "Travel" },
+              { label: "Groceries", amount: 150, category: "Food" },
+              { label: "Movie", amount: 300, category: "Entertainment" },
+              { label: "Parking", amount: 100, category: "Travel" },
             ].map((item, index) => (
               <Button
                 key={index}

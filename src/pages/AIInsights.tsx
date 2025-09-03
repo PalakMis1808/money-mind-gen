@@ -198,96 +198,71 @@ const AIInsights = () => {
               </div>
             </CardContent>
           </Card>
-
-          {/* Alerts Section */}
-          {aiResponse.alerts && aiResponse.alerts.length > 0 && (
-            <Card className="shadow-card">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <AlertCircle className="h-5 w-5 text-warning" />
-                  <span>Financial Alerts</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-3">
-                  {aiResponse.alerts.map((alert, index) => (
-                    <div key={index} className="p-3 bg-warning/10 border border-warning/20 rounded-lg">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <AlertCircle className="h-4 w-4 text-warning" />
-                        <p className="text-sm leading-relaxed text-warning font-medium">{alert}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
       )}
 
-      {/* Financial Tips */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <TrendingUp className="h-5 w-5 text-success" />
-              <span>Smart Saving Tips</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start space-x-2">
-                <span className="text-success">•</span>
-                <span>Use the 50/30/20 rule: 50% needs, 30% wants, 20% savings</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <span className="text-success">•</span>
-                <span>Set up automatic transfers to your savings account</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <span className="text-success">•</span>
-                <span>Review and cancel unused subscriptions monthly</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <span className="text-success">•</span>
-                <span>Use cashback apps and credit card rewards wisely</span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+      {/* Financial Tips + Alerts */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  {/* Smart Saving Tips (always shown) */}
+  <Card className="shadow-card">
+    <CardHeader>
+      <CardTitle className="flex items-center space-x-2">
+        <TrendingUp className="h-5 w-5 text-success" />
+        <span>Smart Saving Tips</span>
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      <ul className="space-y-3 text-sm">
+        <li className="flex items-start space-x-2">
+          <span className="text-success">•</span>
+          <span>Use the 50/30/20 rule: 50% needs, 30% wants, 20% savings</span>
+        </li>
+        <li className="flex items-start space-x-2">
+          <span className="text-success">•</span>
+          <span>Set up automatic transfers to your savings account</span>
+        </li>
+        <li className="flex items-start space-x-2">
+          <span className="text-success">•</span>
+          <span>Review and cancel unused subscriptions monthly</span>
+        </li>
+        <li className="flex items-start space-x-2">
+          <span className="text-success">•</span>
+          <span>Use cashback apps and credit card rewards wisely</span>
+        </li>
+      </ul>
+    </CardContent>
+  </Card>
 
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <AlertCircle className="h-5 w-5 text-warning" />
-              <span>Budget Alerts</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="p-3 bg-warning/10 border border-warning/20 rounded-lg">
-                <div className="flex items-center space-x-2 mb-1">
-                  <AlertCircle className="h-4 w-4 text-warning" />
-                  <span className="font-medium text-warning">Travel Over Budget</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  You've exceeded your travel budget by ₹100 this month.
-                </p>
-              </div>
-              
-              <div className="p-3 bg-success/10 border border-success/20 rounded-lg">
-                <div className="flex items-center space-x-2 mb-1">
-                  <TrendingUp className="h-4 w-4 text-success" />
-                  <span className="font-medium text-success">Great Progress</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  You're 20% under budget for entertainment this month!
+  {/* Financial Alerts (only if alerts exist) */}
+  {aiResponse?.alerts?.length > 0 && (
+    <Card className="shadow-card">
+      <CardHeader>
+        <CardTitle className="flex items-center space-x-2">
+          <AlertCircle className="h-5 w-5 text-warning" />
+          <span>Financial Alerts</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-3">
+          {aiResponse.alerts.map((alert, index) => (
+            <div
+              key={index}
+              className="p-3 bg-warning/10 border border-warning/20 rounded-lg"
+            >
+              <div className="flex items-center space-x-2 mb-1">
+                <AlertCircle className="h-4 w-4 text-warning" />
+                <p className="text-sm leading-relaxed text-warning font-medium">
+                  {alert}
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )}
+</div>
+
 
       {/* How It Works */}
       <Card className="shadow-card">
