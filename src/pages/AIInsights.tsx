@@ -2,32 +2,92 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { getMonthDateRange, getCurrentMonth } from "@/lib/dateUtils";
 import { Brain, Lightbulb, TrendingUp, AlertCircle, Loader2 } from "lucide-react";
+
+interface AIResponse {
+  analysis: string;
+  tips: string[];
+  alerts: string[];
+}
 
 const AIInsights = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [insights, setInsights] = useState<string[]>([]);
+  const [aiResponse, setAiResponse] = useState<AIResponse | null>(null);
   const [hasGeneratedInsights, setHasGeneratedInsights] = useState(false);
 
   const generateInsights = async () => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "Please log in to generate AI insights.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
     
     try {
-      // This will be replaced with actual API call to backend/AI service
-      // For now, we'll simulate with mock insights
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const mockInsights = [
-        "🍽️ Your food expenses have increased by 15% this month. Consider meal planning to reduce costs.",
-        "🚗 Travel expenses are 50% over budget. Look into carpooling or public transportation options.",
-        "🎬 Entertainment spending is well within budget. Good job maintaining balance!",
-        "💡 You could save $200/month by reducing food delivery orders and cooking more at home.",
-        "📊 Your spending pattern shows consistent overspending in the last week of each month. Plan ahead!",
-        "🎯 Based on your trends, consider setting aside $150 more per month for unexpected expenses.",
-      ];
-      
-      setInsights(mockInsights);
+      const currentMonth = getCurrentMonth();
+      const { startDate, endDate } = getMonthDateRange(currentMonth);
+
+      // Fetch user's expenses for current month
+      const { data: expensesData, error: expensesError } = await supabase
+        .from('expenses')
+        .select('category, amount')
+        .eq('user_id', user.id)
+        .gte('date', startDate)
+        .lt('date', endDate);
+
+      if (expensesError) throw expensesError;
+
+      // Fetch user's budget for current month
+      const { data: budgetData, error: budgetError } = await supabase
+        .from('budgets')
+        .select('limit_amount')
+        .eq('user_id', user.id)
+        .eq('month', currentMonth)
+        .single();
+
+      if (budgetError && budgetError.code !== 'PGRST116') throw budgetError;
+
+      const expenses = expensesData || [];
+      const budget = budgetData?.limit_amount || 0;
+
+      // Prepare data for AI
+      const userData = {
+        expenses: expenses.map(exp => ({
+          category: exp.category,
+          amount: exp.amount
+        })),
+        budget: budget
+      };
+
+      console.log('Sending data to AI:', userData);
+
+      // Call Supabase Edge Function
+      const { data: aiData, error: aiError } = await supabase.functions.invoke('ai-suggestions', {
+        body: userData
+      });
+
+      if (aiError) {
+        console.error('Edge function error:', aiError);
+        throw new Error(aiError.message || 'Failed to get AI suggestions');
+      }
+
+      if (aiData.error) {
+        console.error('AI API error:', aiData.error);
+        throw new Error(aiData.error);
+      }
+
+      console.log('AI response:', aiData);
+
+      setAiResponse(aiData);
       setHasGeneratedInsights(true);
       
       toast({
@@ -35,9 +95,10 @@ const AIInsights = () => {
         description: "AI insights generated successfully",
       });
     } catch (error) {
+      console.error('Error generating insights:', error);
       toast({
         title: "Error",
-        description: "Failed to generate insights. Please try again.",
+        description: "⚠️ AI could not generate suggestions. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -84,7 +145,7 @@ const AIInsights = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Analyzing...
+                    Generating AI insights...
                   </>
                 ) : (
                   <>
@@ -98,28 +159,70 @@ const AIInsights = () => {
         </CardContent>
       </Card>
 
-      {/* Insights Results */}
-      {hasGeneratedInsights && (
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Lightbulb className="h-5 w-5 text-yellow-500" />
-              <span>Your Personalized Insights</span>
-            </CardTitle>
-            <CardDescription>
-              Based on your spending data from the last 6 months
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4">
-              {insights.map((insight, index) => (
-                <div key={index} className="p-4 bg-accent/50 rounded-lg border-l-4 border-primary">
-                  <p className="text-sm leading-relaxed">{insight}</p>
+      {/* AI Insights Results */}
+      {hasGeneratedInsights && aiResponse && (
+        <div className="space-y-6">
+          {/* Analysis Section */}
+          <Card className="shadow-card">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Brain className="h-5 w-5 text-primary" />
+                <span>Financial Analysis</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="p-4 bg-accent/50 rounded-lg border-l-4 border-primary">
+                <p className="text-sm leading-relaxed">{aiResponse.analysis}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Money-Saving Tips */}
+          <Card className="shadow-card">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Lightbulb className="h-5 w-5 text-yellow-500" />
+                <span>Money-Saving Tips</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3">
+                {aiResponse.tips.map((tip, index) => (
+                  <div key={index} className="p-3 bg-success/10 rounded-lg border border-success/20">
+                    <div className="flex items-start space-x-2">
+                      <span className="text-success font-bold">•</span>
+                      <p className="text-sm leading-relaxed">{tip}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Alerts Section */}
+          {aiResponse.alerts && aiResponse.alerts.length > 0 && (
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <AlertCircle className="h-5 w-5 text-warning" />
+                  <span>Financial Alerts</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-3">
+                  {aiResponse.alerts.map((alert, index) => (
+                    <div key={index} className="p-3 bg-warning/10 border border-warning/20 rounded-lg">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <AlertCircle className="h-4 w-4 text-warning" />
+                        <p className="text-sm leading-relaxed text-warning font-medium">{alert}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       )}
 
       {/* Financial Tips */}
