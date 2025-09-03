@@ -223,7 +223,7 @@ const AddExpense = () => {
                 className="h-auto p-3 flex flex-col space-y-1 hover:bg-accent/80"
               >
                 <span className="font-medium">{item.label}</span>
-                <span className="text-sm text-muted-foreground">${item.amount}</span>
+                <span className="text-sm text-muted-foreground">₹{item.amount}</span>
               </Button>
             ))}
           </div>

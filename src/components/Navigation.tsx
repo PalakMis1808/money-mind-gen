@@ -8,13 +8,17 @@ import {
   Brain,
   Bell,
   Wallet,
-  LogOut
+  LogOut,
+  Sun,
+  Moon
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/useAuth";
 
 const Navigation = () => {
   const location = useLocation();
   const { signOut, user } = useAuth();
+  const { theme, setTheme } = useTheme();
   
   const navItems = [
     { path: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -62,6 +66,21 @@ const Navigation = () => {
               );
             })}
             </div>
+            
+            {/* Theme Toggle */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="hover:bg-accent hover:text-accent-foreground"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
+              <span className="sr-only">Toggle theme</span>
+            </Button>
             
             {/* User Info & Sign Out */}
             <div className="flex items-center space-x-2">

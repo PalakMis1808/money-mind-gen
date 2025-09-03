@@ -231,7 +231,7 @@ const Dashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
-                <Tooltip formatter={(value) => [`$${value}`, '']} />
+                <Tooltip formatter={(value) => [`₹${value}`, '']} />
                 <Legend />
                 <Line 
                   type="monotone" 
@@ -277,7 +277,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-destructive">-${expense.amount.toFixed(2)}</p>
+                    <p className="font-medium text-destructive">-₹{expense.amount.toFixed(2)}</p>
                     <p className="text-sm text-muted-foreground">{expense.date}</p>
                   </div>
                 </div>

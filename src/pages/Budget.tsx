@@ -267,8 +267,8 @@ const Budget = () => {
                 className={`h-3 ${spentPercentage > 90 ? 'bg-destructive/20' : spentPercentage > 75 ? 'bg-warning/20' : 'bg-success/20'}`}
               />
               <div className="flex justify-between text-sm text-muted-foreground">
-                <span>${currentSpent.toFixed(2)} spent</span>
-                <span>${monthlyBudget.toFixed(2)} budget</span>
+                <span>₹{currentSpent.toFixed(2)} spent</span>
+                <span>₹{monthlyBudget.toFixed(2)} budget</span>
               </div>
             </div>
           </CardContent>
@@ -339,9 +339,9 @@ const Budget = () => {
                       </div>
                       <div className="text-right">
                         <span className={`font-medium ${isOverBudget ? 'text-destructive' : 'text-foreground'}`}>
-                          ${item.spent.toFixed(2)}
+                          ₹{item.spent.toFixed(2)}
                         </span>
-                        <span className="text-muted-foreground"> / ${item.budgeted.toFixed(2)}</span>
+                        <span className="text-muted-foreground"> / ₹{item.budgeted.toFixed(2)}</span>
                       </div>
                     </div>
                     <Progress 
@@ -352,9 +352,9 @@ const Budget = () => {
                       <span>{categoryPercentage.toFixed(0)}% used</span>
                       <span>
                         {isOverBudget ? (
-                          <span className="text-destructive">Over by ${(item.spent - item.budgeted).toFixed(2)}</span>
+                          <span className="text-destructive">Over by ₹{(item.spent - item.budgeted).toFixed(2)}</span>
                         ) : (
-                          <span>${(item.budgeted - item.spent).toFixed(2)} remaining</span>
+                          <span>₹{(item.budgeted - item.spent).toFixed(2)} remaining</span>
                         )}
                       </span>
                     </div>

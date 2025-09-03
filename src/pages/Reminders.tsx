@@ -289,7 +289,7 @@ const Reminders = () => {
           <Card className="shadow-card">
             <CardContent className="text-center p-6">
               <div className="text-2xl font-bold text-success">
-                ${reminders.reduce((sum, r) => sum + (r.amount || 0), 0).toFixed(2)}
+                ₹{reminders.reduce((sum, r) => sum + (r.amount || 0), 0).toFixed(2)}
               </div>
               <p className="text-muted-foreground">Total Amount</p>
             </CardContent>

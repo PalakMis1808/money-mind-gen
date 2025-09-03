@@ -271,7 +271,7 @@ const AIInsights = () => {
                   <span className="font-medium text-warning">Travel Over Budget</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  You've exceeded your travel budget by $100 this month.
+                  You've exceeded your travel budget by ₹100 this month.
                 </p>
               </div>
               
