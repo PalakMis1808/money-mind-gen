@@ -5,6 +5,7 @@ import { TrendingUp, Target, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { getMonthDateRange } from "@/lib/dateUtils";
+import { Link } from "react-router-dom";
 
 interface Expense {
   id: string;
@@ -285,9 +286,9 @@ const Dashboard = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center text-muted-foreground py-8">
-              No expenses recorded yet. <a href="/add-expense" className="text-primary hover:underline">Add your first expense</a>
-            </div>
+            <Link to="/add-expense" className="text-primary hover:underline">
+              Add your first expense
+            </Link>
           )}
         </CardContent>
       </Card>
